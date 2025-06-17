@@ -1,0 +1,17 @@
+{
+  "name": "visualization-dashboard",
+  "version": "1.0.0",
+  "description": "A full-stack Express and React application",
+  "scripts": {
+    "start-server": "cd server && node app.js",
+    "start-client": "cd client && npm start",
+    "dev": "concurrently \"npm run start-server\" \"npm run start-client\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
