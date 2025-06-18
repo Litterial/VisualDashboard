@@ -25,17 +25,11 @@ function App() {
     setTest(data);
   }
 
-  const testDebug = () =>{
-    console.log("Index State:",index);
-
-  }
-
   return (
     <div className="">
       <div>{index.message}</div>
       <div>{test.message}</div>
       <div>Hello World</div>
-      <button onClick={ () => testDebug()}>Button</button>
       <WebSocketComponent />
     </div>
   );

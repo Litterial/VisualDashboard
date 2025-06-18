@@ -74,13 +74,13 @@ wss.on('connection', ws => {
     });
 
     // Send a welcome message to the newly connected client
-    ws.send('Welcome to the WebSocket server!');
+    //ws.send('Welcome to the WebSocket server!');
 });
 
 // Start the HTTP server (which the WebSocket server is attached to)
 server.listen(port, () => {
     console.log(`Express server listening on port ${port}`);
-    console.log(`WebSocket server running on ws://localhost:${port}`);
+    console.log(`WebSocket server running on ws://localhost:${port}${wsPath}`);
 });
 
 module.exports = app;

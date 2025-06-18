@@ -11,18 +11,20 @@ const useWebSocket = path => {
     //useCallback will return a new value for the sendMessage function that is identical to the previous one across renders
     //Functions, objects, and arrays are passed by reference
     const sendMessage = useCallback(message => {
-        if(ws.current && ws.current.message === WebSocket.OPEN)
+        if(ws.current && ws.current.readyState === WebSocket.OPEN)
             ws.current.send(message);
         else
             console.warn('WebSocket not connected. Unable to send message',message);
     },[]);
 
+
+    //TODO: Consider using state to track the cleanup of the connection to prevent multiple connections
+    //TODO: Investigate proxy issues
     useEffect(() => {
         // Construct the WebSocket URL relative to the current host
-        // window.location.host will be 'localhost:3000' during dev
         // window.location.protocol will be 'http:'
         const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const wsUrl = `${protocol}//${window.location.host}${path}`;
+        const wsUrl = `${protocol}://localhost:5000/${path}`;
 
         ws.current = new WebSocket(wsUrl);
         ws.current.onopen = () => {
@@ -33,6 +35,7 @@ const useWebSocket = path => {
 
         ws.current.onmessage = event => {
             setLastMessage(event.data);
+            console.log('Received message:', event.data);
         };
 
         ws.current.onerror = event => {
@@ -46,8 +49,9 @@ const useWebSocket = path => {
             console.log('WebSocket disconnected.');
         };
 
+        //Clean-up function
         return () => {
-            if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+            if (ws.current && ws.current.readyState !== WebSocket.CLOSED) {
                 ws.current.close();
             }
         };
