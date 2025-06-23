@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import useWebSocket from '../hooks/useWebSocket';
 
 export default function WebSocketComponent() {
@@ -6,6 +6,9 @@ export default function WebSocketComponent() {
     const { isConnected, lastMessage, error, sendMessage } = useWebSocket('ws');
     // ... rest of your component logic
 
+    useEffect(() => {
+        return () => {}
+    },[])
 
     return(
         <div>
