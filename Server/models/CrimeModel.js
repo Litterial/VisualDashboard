@@ -1,8 +1,4 @@
 const mongoose = require("mongoose");
-
-// Define the User Schema
-
-
 const crimeSchema = new mongoose.Schema({
     location: {
         city: {
@@ -151,5 +147,9 @@ const crimeSchema = new mongoose.Schema({
 
 });
 
-// Create and export the User Model based on the schema
-const User = mongoose.model('Crime', crimeSchema)
+
+// Create and export the CrimeModel Model based on the schema
+const CrimeModel = mongoose.model('Crimes', crimeSchema)
+
+
+module.exports = CrimeModel;

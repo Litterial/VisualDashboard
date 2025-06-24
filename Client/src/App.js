@@ -34,7 +34,10 @@ function App() {
   }
 
   return (
-    <div className="">
+    <div className="container">
+        <div>
+           <div></div>
+        </div>
       <div>{index.message}</div>
       <div>{test.message}</div>
       <div>Hello World</div>

@@ -1,7 +1,9 @@
 //Load environment variables from .env file
-//require('dotenv').config();
+require('dotenv').config();
 
 //Back-end framework for RESTful API
+const { MongoClient, ServerApiVersion } = require('mongodb');
+
 const express = require('express');
 const http = require('http');
 const Websocket = require('ws');
@@ -9,8 +11,8 @@ const Websocket = require('ws');
 const path = require('path');
 const mongoose = require('mongoose');
 
-const dns = require('dns');
-const url = require('url');
+// const dns = require('dns');
+// const url = require('url');
 
 const api = "/api/v1";
 const wsPath = "/ws"
@@ -32,21 +34,13 @@ const wss = new Websocket.Server({ server, path: wsPath });
 
 //Connect to MongoDB
 const mongoURI = process.env.MONGODB_URI;
-const hostname = new url.URL(mongoURI).hostname; // Extracts yourcluster.mongodb.net
-
-console.log('Attempting to resolve hostname:', hostname);
-dns.lookup(hostname, (err, address, family) => {
-    if (err) {
-        console.error('DNS Lookup Error:', err);
-        return;
-    }
-    console.log(`Hostname resolved to IP: <span class="math-inline">\{address\} \(Family\: IPv</span>{family})`);
-});
 
 
 //import routes
 const testRouter = require('./routes/test');
 const indexRouter = require('./routes/index');
+const crimeRouter = require('./routes/crimeRoute');
+
 
 
 //Middleware
@@ -59,6 +53,7 @@ app.use(express.static(path.join(__dirname, '..', 'client', 'build'))); // Adjus
 
 app.use(`${api}/index`, indexRouter);
 app.use(`${api}/test`, testRouter);
+app.use(`${api}/crime`, crimeRouter);
 
 
 
@@ -105,13 +100,27 @@ server.listen(port, () => {
     console.log(`WebSocket server running on ws://localhost:${port}${wsPath}`);
 });
 
-mongoose.connect(mongoURI)
+// Connect to MongoDB Atlas
+mongoose.connect(mongoURI, {
+    dbName:'Crimes',
+    // Recommended for newer versions
+    useNewUrlParser: true,
+    // Recommended
+    useUnifiedTopology: true,
+    connectTimeoutMS: 30000,
+    socketTimeoutMS: 30000,
+})
     .then(() => {
         console.log('MongoDB connected successfully!');
     })
     .catch(err => {
         console.error('MongoDB connection error:', err);
-        console.log(mongoURI)
-        process.exit(1); // Exit process with failure
+        if(err.name === "MongooseServerError") {
+            console.log(err.reason.servers);
+        }
+        // Exit process with failure
+        process.exit(1);
     });
+
+
 module.exports = app;
