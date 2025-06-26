@@ -26,23 +26,21 @@ router.get('/search', async (req, res) => {
     }
 
     else if(city && city.trim() !== "") {
-        const response = await crimeData.showCrimesByCity(city.trim(),state);
+        const response = await crimeData.showCrimesByCity(city.trim(),state.trim());
         return res.json(response);
     }
 
     else if (county && county.trim() !== "") {
-        const response = await crimeData.showCrimesByCity(county.trim(),state);
+        const response = await crimeData.showCrimesByCounty(county.trim(),state.trim());
         return res.json(response);
     }
 
-    else{
-        return res.status(404).send(
-            {
-                error: "Bad request",
-                message: " The 'city/county' query parameter is required "
-            }
-        );
+    else {
+        const response = await crimeData.showCrimesByState(state.trim());
+        return res.json(response);
     }
+
+
 })
 
 module.exports = router;

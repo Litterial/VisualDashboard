@@ -36,3 +36,19 @@
     transform: rotate(360deg);
   }
 }
+
+
+
+/* Legend specific styles */
+.legend-item {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.legend-color-box {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  border: 1px solid #ccc;
+}
