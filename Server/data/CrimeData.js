@@ -42,6 +42,12 @@ class CrimeData {
              return results;
 
         }
+
+
+    //Inserts many records into collection
+        bulkInsert = async data => {
+
+        };
 }
 
 module.exports = new CrimeData();

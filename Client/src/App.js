@@ -137,10 +137,8 @@ function App() {
         </div>
 
       <WebSocketComponent />
-        <div>
+        <div className="d-flex">
             { triStateData.length !== 0 ? <ArcComponent data={triStateData} /> :<></> }
-        </div>
-        <div>
             { crimeData.length !== 0 ? <ArcComponent data={crimeData} /> : <></>}
         </div>
     </div>

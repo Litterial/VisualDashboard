@@ -113,7 +113,7 @@ export default function ArcComponent(props){
         <>
             <div className="d-flex justify-content-center align-items-start border border-1">
                 <svg ref={svgRef}></svg>
-                <div ref={legendRef} id="legend-container" className="border border-3 mark mt-auto">
+                <div ref={legendRef} id="legend-container" className="border border-3 mark mt-auto me-2">
                     <h6>Legend</h6>
                 </div>
 
