@@ -19,7 +19,6 @@ export default function ArcComponent(props){
     //d3.scaleOrdinal creates a measurement scale that maps data in a purposeful order or rank (i.e. grades for classes on a report card)
     //For primitive type data objects, it's best to use the index of each element so that it's unique
     //For non-primitive, use the array of objects
-    console.log(data)
     const colorOrdinal = d3.scaleOrdinal(data.map(elem => elem.name),d3.schemePastel2);
 
     // console.log(colorOrdinal.range());
@@ -111,8 +110,8 @@ export default function ArcComponent(props){
 
     return(
         <>
-            <div className="d-flex justify-content-center align-items-start border border-1">
-                <svg ref={svgRef}></svg>
+            <div className="align-items-start border border-1 d-flex justify-content-center m-0 pie-chart-container ">
+                <svg className="pie-svg-chart" ref={svgRef} viewBox="0 0 1024 500"></svg>
                 <div ref={legendRef} id="legend-container" className="border border-3 mark mt-auto me-2">
                     <h6>Legend</h6>
                 </div>

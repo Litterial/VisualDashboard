@@ -7,6 +7,31 @@
   pointer-events: none;
 }
 
+.roh-blue {
+  color: #245da1;
+}
+
+.roh-green {
+  color: #60b257;
+}
+
+.box-shadow{
+  box-shadow: 0 0 6px 8px #80808047;;
+
+}
+
+.pie-chart-container {
+  width: 90%; /* Or fluid width based on parent */
+  max-width: 1024px;
+  margin: 20px auto;
+  border: 1px solid #ccc;
+}
+
+.pie-svg-chart{
+  display: block; /* Removes extra space below SVG */
+  width: 100%;    /* Makes SVG fill its parent container's width */
+  height: auto;   /* Maintains aspect ratio */
+}
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -52,3 +77,5 @@
   margin-right: 8px;
   border: 1px solid #ccc;
 }
+
+

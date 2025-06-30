@@ -8,9 +8,17 @@ const crimeSchema = new mongoose.Schema({
                 trim: true
             },
             state: {
-                type: String,
-                required: true,
-                trim: true
+                name:{
+                    type: String,
+                    required: true,
+                    trim: true
+                },
+                abbreviation:{
+                    type: String,
+                    required: true,
+                    trim: true
+                }
+
             },
             county: {
                 type: String,
@@ -46,59 +54,64 @@ const crimeSchema = new mongoose.Schema({
                 validate: [
                     {
                         validator: date => {
-                            return date <= Date.now();
+                            return date <= new Date();
                         },
                         message: date => `Cannot select a date in the future`
                     },
                     {
                         validator: date => {
-                            var today = Date.now();
+                            var today = new Date();
                             today.setFullYear(today.getFullYear() - 18);
-                            return date < new Date(today.getFullYear(), today.getMonth() , today.getDate());
+                            return date < today;
                         },
                         message: data => `Cannot arrest anyone under 18 `
                     }
                 ]
 
             },
-            address:{
-                street1:{
-                    type: String,
-                    required: true,
-                    trim: true
-                },
+            address: {
+                type:{
+                    street1: {
+                        type: String,
+                        required: true,
+                        trim: true
+                    },
 
-                street2:{
-                    type: String,
-                    required: false,
-                    trim: true
-                },
+                    street2: {
+                        type: String,
+                        required: false,
+                        trim: true
+                    },
 
-                city:{
-                    type: String,
-                    required: true,
-                    trim: true
-                },
+                    city: {
+                        type: String,
+                        required: true,
+                        trim: true
+                    },
 
-                state:{
-                    type: String,
-                    required: true,
-                    trim: true
-                },
+                    state: {
+                        type: String,
+                        required: true,
+                        trim: true
+                    },
 
-                postalCode:{
-                    type: String,
-                    required: true,
-                    trim: true
-                },
+                    postalCode: {
+                        type: String,
+                        required: true,
+                        trim: true
+                    },
 
-                country:{
-                    type: String,
-                    required: true,
-                    trim: true
+                    country: {
+                        type: String,
+                        required: true,
+                        trim: true
+                    },
                 },
+                required: true
+
+            },
                 //TODO: Consider adding crypto to encrypt user passwords
-                ssn:{
+            ssn:{
                     type: String,
                     required: true,
                     trim: true,
@@ -115,9 +128,7 @@ const crimeSchema = new mongoose.Schema({
 
                 }
 
-            }
-
-        },
+            },
         required:true
     },
 

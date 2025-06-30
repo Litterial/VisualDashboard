@@ -1,37 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
+
 import React,{useState, useEffect} from 'react';
 import WebSocketComponent from "./components/WebSocketComponent";
-import LinePlot from "./components/LinePlot";
 import ArcComponent from "./components/ArcComponent";
+import useWebSocket from "./hooks/useWebSocket";
 function App() {
 
-  const [index, setIndex] = useState({});
-  const [test,setTest] = useState({});
-  const lineData = [5,10,43,65,2134,9];
-  const [pieData, setPieData] = useState([]);
+  // const [index, setIndex] = useState({});
+  // const [test,setTest] = useState({});
+  // const lineData = [5,10,43,65,2134,9];
+  // const [pieData, setPieData] = useState([]);
 
+  const { isConnected, lastMessage, error, sendMessage } = useWebSocket('ws');
   const city = "Memphis";
   const county = "Shelby";
   const state = {name:"Tennessee",abbreviation:"TN"};
+  const topCities = ["Memphis","Nashville","Knoxville","Chattanooga","Clarksville"]
   const [cityData, setCityData] = useState([]);
   const [countyData, setCountyData] = useState([]);
   const [stateData, setStateData] = useState([]);
   const [triStateData, setTriStateData] = useState([]);
   const [crimeData, setCrimeData] = useState([]);
+  const [topCityData, setTopCityData] = useState([]);
 
     useEffect(()=>{
-    // getIndex();
-    // getTest();
+        getStateData();
         getTriStateData();
 
     return () =>{
 
     }
-  },[cityData,countyData,stateData])
+  },[lastMessage])
 
-     const getStateData= async ()=> {
+     const getStateData = async ()=> {
             const response = await fetch(`/api/v1/crime/search?state=${state.abbreviation}`);
             const data = await response.json();
             setStateData(data);
@@ -43,6 +45,10 @@ function App() {
             //Filter by county
             const filterByCounty = data.filter(x => x.location.county === county);
             setCountyData(filterByCounty);
+
+             const filterTopCities = data.filter(elem => topCities.includes(elem.location.city));
+             var pieData = createTopCityData(filterTopCities);
+             setTopCityData(pieData);
      };
 
     const getTriStateData = async () =>{
@@ -55,23 +61,25 @@ function App() {
         setTriStateData(pieData);
 
         /// Set data for categories
-        pieData = createCrimeData(data);
-        setCrimeData(pieData);
+        // pieData = createCrimeData(data);
+        // setCrimeData(pieData);
+
+
     }
 
 
-    const createTriStatePieData = data => {
+    const createTopCityData = data => {
         var tempArray = [];
-        let state = undefined;
+        let city = undefined;
 
         //Maps data into an array that keeps track of the total number of crimes per state
         data.map(elem => {
-            state = tempArray.find(x => x.name === elem.location.state);
+            city = tempArray.find(x => x.name === elem.location.city);
 
-            if(state === undefined)
-                tempArray.push({name:elem.location.state, total: 0});
+            if(city === undefined)
+                tempArray.push({name:elem.location.city, total: 0});
             else
-                state.total += 1;
+                city.total += 1;
         });
         return tempArray;
     };
@@ -102,45 +110,82 @@ function App() {
         return tempArray;
     }
 
+    const createTriStatePieData = data => {
+        var tempArray = [];
+        let state = undefined;
 
-  const getIndex = async ()=>{
-    const response = await fetch('/api/v1/index');
-    const data = await response.json();
-    setIndex(data);
+        //Maps data into an array that keeps track of the total number of crimes per state
+        data.map(elem => {
+            state = tempArray.find(x => x.name === elem.location.state.abbreviation);
+
+            if(state === undefined)
+                tempArray.push({name:elem.location.state.abbreviation, total: 0});
+            else
+                state.total += 1;
+        });
+        return tempArray;
+    };
+
+
+  const uploadCSV = async e => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const response = await fetch(`/api/v1/crime/upload-crimes-csv`,
+        {
+            method: 'POST',
+            contentType: 'multipart/form-data',
+            body: formData,
+        });
+
+      console.log(response.status);
+
+      if(response.status === 200)
+        sendMessage("File uploaded successfully.");
+
   }
-
-  const getTest = async ()=>{
-    const response = await fetch('/api/v1/test');
-    const data = await response.json();
-    setTest(data);
-  }
-
   return (
-    <div className="container">
-        <div>
-           <div className='d-flex'>
+    <div className="container mb-2">
+        <div className="mt-3">
+            <div className="h2 mb-3">Number of crimes</div>
+           <div className='box-shadow d-flex justify-content-between mt-3 p-3 text-center'>
                <div>
-                   <div>{city}</div>
-                   <div>{cityData.length}</div>
+                   <div className="h4 roh-blue">{city}</div>
+                   <div className="h4 roh-green">{cityData.length}</div>
                </div>
 
                <div>
-                   <div>{county}</div>
-                   <div>{countyData.length}</div>
+                   <div className="h4 roh-blue">{county} County</div>
+                   <div className="h4 roh-green">{countyData.length}</div>
                </div>
 
                <div>
-                   <div>{state.name}</div>
-                   <div>{stateData.length}</div>
+                   <div className="h4 roh-blue">{state.name}</div>
+                   <div className="h4 roh-green">{stateData.length}</div>
                </div>
            </div>
         </div>
 
-      <WebSocketComponent />
-        <div className="d-flex">
-            { triStateData.length !== 0 ? <ArcComponent data={triStateData} /> :<></> }
-            { crimeData.length !== 0 ? <ArcComponent data={crimeData} /> : <></>}
+        <div className="pb-2">
+            { triStateData.length !== 0 ? <div className="mt-3">
+                <div className="h2">Crimes in Tri-state area</div>
+                <ArcComponent data={triStateData} /> </div>
+                :<></> }
+            { topCityData.length !== 0 ? <div className="mt-3">
+                <div className="h2">Crimes in Top Cities (TN)</div>
+                <ArcComponent data={topCityData} />
+            </div>: <></>}
         </div>
+
+        <div className="h2">Upload Crime Data</div>
+        <form onSubmit={uploadCSV} id='cvsForm'>
+            <label htmlFor="crimeFile" className="form-label">Select and upload a .CSV file to update metrics</label>
+            <input className="form-control form-control-lg" type="file" name="crimeFile" id="crimeFile"/>
+            <div className="mt-2">
+                <button className="btn btn-success btn-lg" type="submit">Upload .CSV</button>
+
+            </div>
+        </form>
     </div>
   );
 }

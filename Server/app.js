@@ -70,7 +70,7 @@ wss.on('connection', ws => {
         console.log(`Received message: ${message}`);
 
         // Echo the message back to the client
-        ws.send(`Server received: ${message}`);
+        //ws.send(`Server received: ${message}`);
 
         // Broadcast to all connected clients (except the sender)
         wss.clients.forEach(client => {

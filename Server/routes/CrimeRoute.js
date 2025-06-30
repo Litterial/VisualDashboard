@@ -1,6 +1,6 @@
 const express = require('express');
 const crimeData = require('../data/CrimeData');
-const uploadCSV = require('../helpers/uploadCSV');
+const uploadCSV = require('../helper/fileHelper');
 const csv = require('csv-parser');
 // Node.js built-in for streams
 const { Readable } = require('stream');
@@ -42,7 +42,8 @@ router.get('/search', async (req, res) => {
     }
 })
 
-//name attribute for input field
+//Bulk insert of crimes via csv
+// crimeFile is name attribute for input field for the file
 router.post('/upload-crimes-csv', uploadCSV.single("crimeFile"),async (req, res) => {
     if(!req.file)
         return res.status(400).send({error: "Bad request",message:"No .cvs file uploaded"});
@@ -53,17 +54,58 @@ router.post('/upload-crimes-csv', uploadCSV.single("crimeFile"),async (req, res)
 
     //Create a readable stream from the buffer
     try {
-        const readableStream = new ReadableStream();
+        const readableStream = new Readable();
+        //When a new ReadableStream is initialized; it's required to have an implementation of _read() function even though it won't b used
         readableStream._read = () => {}
+
+        //injects entire cvs data into a readable stream
         readableStream.push(csvBuffer);
+
+        //signals there is no more data to come
         readableStream.push(null);
 
 
         //Pipe the buffer to stream to csv-parser
-
         readableStream
             .pipe(csv())
-            .on('data', chunk => results.push(csvBuffer))
+            .on('data', data => {
+                //transform the data in nested objects
+                const transformedData = {
+                    location: {
+                        city: data['location.city'],
+                        state: {
+                            name:data['location.state.name'],
+                            abbreviation:data['location.state.abbreviation'],
+                        },
+                        county: data['location.county'],
+                    },
+                    convict: {
+                        firstName: data['convict.firstName'],
+                        middleName: data['convict.middleName'] || null, // Handle optional fields
+                        lastName: data['convict.lastName'],
+                        dateOfBirth: new Date(data['convict.dateOfBirth']) ,
+                        address: {
+                            street1: data['convict.address.street1'],
+                            street2: data['convict.address.street2'] || null,
+                            city: data['convict.address.city'],
+                            state: data['convict.address.state'],
+                            postalCode: data['convict.address.postalCode'],
+                            country: data['convict.address.country'],
+                        },
+                        ssn: data['convict.ssn'],
+
+                    },
+                    category: {
+                        primary: data['category.primary'],
+                        secondary: data['category.secondary'],
+                    },
+                    dateOccurrence: new Date(data['dateOccurrence']),
+                    dateEntered:  new Date(data['dateEntered']),
+                    dateModified: data['dateModified'] ? new Date(data['dateModified']) : null,
+                };
+                results.push(transformedData);
+            })
+            // Return a message based on how many entries succeeded
             .on('end', async() => {
                 console.log('CSV data parsed from memory. Total rows:', results.length);
                 await crimeData.bulkInsert(results);
