@@ -5,6 +5,7 @@ import React,{useState, useEffect} from 'react';
 import WebSocketComponent from "./components/WebSocketComponent";
 import ArcComponent from "./components/ArcComponent";
 import useWebSocket from "./hooks/useWebSocket";
+import ChartGraphComponent from "./components/ChartGraphComponent";
 function App() {
 
   // const [index, setIndex] = useState({});
@@ -61,8 +62,8 @@ function App() {
         setTriStateData(pieData);
 
         /// Set data for categories
-        // pieData = createCrimeData(data);
-        // setCrimeData(pieData);
+        var barChartData = createCrimeData(data);
+        setCrimeData(barChartData);
 
 
     }
@@ -92,15 +93,6 @@ function App() {
         //Maps data into an array that keeps track of the total number of crime types
         data.map(elem => {
             category = tempArray.find(x => x.name === elem.category.primary);
-
-            // //Sets remaining to other if there are more than 5 categories
-            // if(category === undefined && tempArray.length >= 6){
-            //     category = tempArray.find(x => x.name === "Other");
-            //     if(category === undefined)
-            //         tempArray.push({name:"Other", total: 0});
-            //     else
-            //         category.total += 1;
-            // }
 
             if(category === undefined)
                 tempArray.push({name:elem.category.primary, total: 0});
@@ -172,8 +164,13 @@ function App() {
                 <ArcComponent data={triStateData} /> </div>
                 :<></> }
             { topCityData.length !== 0 ? <div className="mt-3">
-                <div className="h2">Crimes in Top Cities (TN)</div>
+                <div className="h2">Crimes in Major Cities (TN)</div>
                 <ArcComponent data={topCityData} />
+            </div>: <></>}
+
+            { crimeData.length !== 0 ? <div className="mt-3">
+                <div className="h2">Crime categories</div>
+                <ChartGraphComponent data={crimeData} />
             </div>: <></>}
         </div>
 

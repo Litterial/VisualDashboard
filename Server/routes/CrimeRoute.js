@@ -88,7 +88,11 @@ router.post('/upload-crimes-csv', uploadCSV.single("crimeFile"),async (req, res)
                             street1: data['convict.address.street1'],
                             street2: data['convict.address.street2'] || null,
                             city: data['convict.address.city'],
-                            state: data['convict.address.state'],
+                            state:{
+                                name: data['convict.address.state.name'],
+                                abbreviation: data['convict.address.state.abbreviation'],
+
+                            },
                             postalCode: data['convict.address.postalCode'],
                             country: data['convict.address.country'],
                         },

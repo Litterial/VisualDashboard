@@ -6,8 +6,8 @@ export default function ArcComponent(props){
     const {data} = props;
 
     //TODO: Make graph responsive
-    const width = 640;
-    const height = 400;
+    const width = 800;
+    const height = 600;
 
 
     const svgRef = useRef();
@@ -43,6 +43,8 @@ export default function ArcComponent(props){
         // Moves pie chart to center of div
         const g = svg.append("g")
              .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+
 
         // .value tells the layout which property of the object represents the size of the slice
         const pie = d3.pie().value(d => d.total)

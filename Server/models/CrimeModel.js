@@ -90,9 +90,16 @@ const crimeSchema = new mongoose.Schema({
                     },
 
                     state: {
-                        type: String,
-                        required: true,
-                        trim: true
+                        name:{
+                            type: String,
+                            required: true,
+                            trim: true
+                        },
+                        abbreviation:{
+                            type: String,
+                            required: true,
+                            trim: true
+                        }
                     },
 
                     postalCode: {
