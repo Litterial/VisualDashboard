@@ -40,7 +40,7 @@ const mongoURI = process.env.MONGODB_URI;
 const testRouter = require('./routes/test');
 const indexRouter = require('./routes/index');
 const crimeRouter = require('./routes/crimeRoute');
-
+const locationRouter = require('./routes/locationRoute');
 
 
 //Middleware
@@ -54,6 +54,7 @@ app.use(express.static(path.join(__dirname, '..', 'client', 'build'))); // Adjus
 app.use(`${api}/index`, indexRouter);
 app.use(`${api}/test`, testRouter);
 app.use(`${api}/crime`, crimeRouter);
+app.use(`${api}/location`, locationRouter);
 
 
 
