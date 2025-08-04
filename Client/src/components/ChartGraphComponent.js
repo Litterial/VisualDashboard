@@ -8,6 +8,7 @@ export default function ChartGraphComponent(props){
     const svgRef = useRef();
     // const legendRef = useRef();
 
+
     //TODO: Make graph responsive
     const width = 1024;
     const height = 800;
