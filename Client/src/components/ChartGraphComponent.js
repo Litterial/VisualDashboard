@@ -31,8 +31,9 @@ export default function ChartGraphComponent(props){
 
         svg.selectAll("*").remove();
 
-        const g = svg.append("g")
-        .attr("transform", `translate(${margin.left},${margin.top})`);
+        // Use a more descriptive name, like 'chartArea'
+        const chartArea = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
 
         // Create scales
         const xScale = d3.scaleBand()
@@ -44,18 +45,16 @@ export default function ChartGraphComponent(props){
             .domain([0, d3.max(data, d => d.total)])
             .range([height - margin.top - margin.bottom, 0]);
 
-
-        //Creates axis
-
-        g.append("g")
+        // Creates axis using the new variable name
+        chartArea.append("g")
             .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
             .call(d3.axisBottom(xScale));
 
-        g.append("g")
+        chartArea.append("g")
             .call(d3.axisLeft(yScale));
 
         // 5. Create bars
-        g.selectAll(".bar")
+        chartArea.selectAll(".bar")
             .data(data)
             .enter().append("rect")
             .classed("bar", true)
@@ -65,62 +64,25 @@ export default function ChartGraphComponent(props){
             .attr("height", d => (height - margin.top - margin.bottom) - yScale(d.total))
             .attr("fill", d => colorOrdinal(d.name))
             .on("mouseover", (event,d) => {
-                //arrow functions do not bind this.
-                var bar = d3.select(event.target)
-                bar.attr("opacity", 0.6);
+                d3.select(event.currentTarget)
+                    .attr("opacity", 0.6);
 
-                bar.selectAll(".bar-label")
-                    .data(data)
-                    .enter().append("text")
+                // Append a new text element to the group
+                chartArea.append("text")
                     .classed("bar-label", true)
-                    .attr("x", d => xScale(d.name) + xScale.bandwidth() /2 )
-                    .attr("y", d => yScale(d.total) - 15 )
+                    .attr("x", xScale(d.name) + xScale.bandwidth() / 2)
+                    .attr("y", yScale(d.total) - 5)
                     .attr("text-anchor", "middle")
-                    .text((elem, ndx) =>  elem.total);
-
-
-                d3.select(event.currentTarget).attr("opacity", 0.6);
+                    .attr("font-size", "12px")
+                    .attr("fill", "black")
+                    .text(d.total);
             })
             .on("mouseout", (event,d) => {
                 d3.select(event.currentTarget).attr("opacity", 1.0);
-            })
 
-
-
-        // g.selectAll(".bar-label")
-        //     .data(data)
-        //     .enter().append("text")
-        //     .classed("bar-label", true)
-        //     .attr("x", d => xScale(d.name) + xScale.bandwidth() /2 )
-        //     .attr("y", d => yScale(d.total) - 15 )
-        //     .attr("text-anchor", "middle")
-        //     .text((elem, ndx) =>  elem.total);
-
-
-
-
-        // const legendContainer = d3.select(legendRef.current)
-        //
-        // legendContainer.selectAll('*').remove();
-        //
-        // var label = legendContainer.append('div')
-        //     .classed('mb-2', true)
-        //     .text( elem => 'Legend')
-        //
-        // const legend = label.selectAll('.legend-item')
-        //     .data(colorOrdinal.domain())
-        //     .enter()
-        //     .append('div')
-        //     .classed("legend-item", true)
-        //
-        //
-        // legend.append('div')
-        //     .classed('legend-color-box', true)
-        //     .style("background-color", elem => colorOrdinal(elem))
-        //
-        // legend.append('span')
-        //     .text(elem => elem)
-
+                // Select and remove the text element created on mouseover
+                chartArea.selectAll(".bar-label").remove();
+            });
 
         return () => {};
     },[])
